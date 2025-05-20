@@ -239,6 +239,52 @@ Tel: 03-1234-5678
 Email: YYY@company.co.jp  
 ```
 
+件名: 【Technical/General Guidance】Transit Gateway 手順書レビューのお願い (Account B)
+
+```
+AWS サポート御中
+
+お世話になっております。  
+XXX株式会社 クラウド基盤部のYYYと申します。
+
+添付の「Transit Gateway 共有承諾～アタッチ手順書（アカウントB向け）」につきまして、  
+以下の観点でご確認・ご教示いただきたくご連絡差し上げました。
+
+――――――――――――  
+■確認依頼事項  
+1. ドキュメントに記載の各ステップ（RAM 共有承諾、TGW-VPC アタッチ作成・承諾、疎通確認）が  
+   最新の公式ドキュメントに完全に準拠しているか  
+2. 設定漏れや誤記の有無  
+3. CLI／コンソール手順のいずれかで混乱を招く表現がないか  
+4. 追加すべき注意事項や推奨設定があればご指摘ください  
+
+■添付ファイル  
+- TransitGateway_Procedure_AccountB.pdf（手順書本体）  
+- CLI_Logs.zip（各コマンド実行ログ）  
+
+■環境情報  
+- アカウントID：123456789012  
+- リージョン：ap-northeast-1  
+- AWS CLI：v2.11.5  
+- Terraform：v1.4.6  
+
+■希望連絡方法／回答期限  
+- メール（YYY@company.co.jp）またはチャット  
+- 可能であれば◯月◯日（○）までにご回答いただけますと幸いです  
+
+――――――――――――  
+
+お忙しいところ恐れ入りますが、  
+上記ドキュメントの内容精査および改善ポイントのご指摘のほど、  
+何卒よろしくお願いいたします。
+
+———  
+YYY  
+XXX株式会社 クラウド基盤部  
+TEL: 03-1234-5678  
+E-mail: YYY@company.co.jp  
+```
+
 ---
 
 [1]: https://docs.aws.amazon.com/awssupport/latest/user/case-example.html?utm_source=chatgpt.com "Example: Create a support case for account and billing - AWS Support"
