@@ -1,7 +1,3 @@
-以下では、各手順を AWS 公式ドキュメントに再照合し、誤りや不足を修正したものを示します。各ステップの内容は最新のドキュメントに基づき、コンソール操作と CLI 操作の両面から確認しています。
-
----
-
 ## 要点まとめ
 
 * **共有承諾**（RAM）では、リージョン選択や IAM 権限要件を明示し、コンソール・CLI 両方の最新手順を盛り込みました([AWS ドキュメント][1])([AWS ドキュメント][2])。
@@ -139,8 +135,6 @@ aws ec2 accept-transit-gateway-vpc-attachment \
 
 ---
 
-以上、公式ドキュメントに沿って再検証・修正を加えた最新手順です。ご確認ください。
-
 [1]: https://docs.aws.amazon.com/ram/latest/userguide/working-with-shared-invitations.html?utm_source=chatgpt.com "Accepting and rejecting resource share invitations"
 [2]: https://docs.aws.amazon.com/cli/latest/reference/ram/accept-resource-share-invitation.html?utm_source=chatgpt.com "accept-resource-share-invitation - AWS Documentation"
 [3]: https://docs.aws.amazon.com/vpc/latest/tgw/create-vpc-attachment.html?utm_source=chatgpt.com "Create a VPC attachment using Amazon VPC Transit Gateways"
@@ -150,3 +144,107 @@ aws ec2 accept-transit-gateway-vpc-attachment \
 [7]: https://docs.aws.amazon.com/cli/latest/reference/ec2/create-transit-gateway-vpc-attachment.html?utm_source=chatgpt.com "create-transit-gateway-vpc-attachment - AWS Documentation"
 [8]: https://docs.aws.amazon.com/cli/latest/reference/ec2/accept-transit-gateway-vpc-attachment.html?utm_source=chatgpt.com "accept-transit-gateway-vpc-attachment - AWS Documentation"
 [9]: https://docs.aws.amazon.com/vpc/latest/tgw/tgw-vpc-attachments.html?utm_source=chatgpt.com "Amazon VPC attachments in Amazon VPC Transit Gateways"
+
+---
+
+---
+
+## ベストプラクティス
+
+### 1. 件名は簡潔かつ具体的に
+
+* 「サービス名＋問題／確認内容＋影響範囲」を含めると、サポート側が内容を素早く把握できます([AWS ドキュメント][1])。
+
+### 2. サポートケースの種別と重要度を明示
+
+* 「Technical」など適切なケース種別を選択し、影響度に応じた Severity（例：`general guidance`／`system impaired`）を設定します([AWS ドキュメント][2])。
+* 重要度が高い場合のみ、上位レベルを選択するのが良いとされています([AWS ドキュメント][2])。
+
+### 3. 環境情報の詳細記載
+
+* AWS アカウント ID、リージョン、利用中の AWS CLI／SDK バージョンを明記します([AWS ドキュメント][2])。
+* 該当リソースの ARN や ID（例：`tgw-0123456789abcdef0`）を含めると、オペレーションがスムーズになります([Repost][3])。
+
+### 4. 再現手順と期待動作の提示
+
+* 手順をステップごとに番号付きで示し、実際の出力例やログを添付すると、問題切り分けが容易になります([Repost][4])。
+
+### 5. 事前調査結果と参照ドキュメント
+
+* AWS ドキュメントへのリンク（例：RAM／TGW／Reachability Analyzer の該当ページ）を示すと、参照すべき箇所がひと目でわかります([AWS ドキュメント][5])。
+
+### 6. 添付ファイルの活用
+
+* CLI 実行ログや CloudTrail ログ、構成ファイル（Terraform／CloudFormation）を ZIP 化して添付します([AWS ドキュメント][6])。
+
+### 7. 連絡方法とタイムゾーン
+
+* メール／チャット／電話のいずれを希望するか明記し、業務時間帯やタイムゾーンを併記すると良いでしょう([AWS ドキュメント][1])。
+
+### 8. 期待する回答期限
+
+* ビジネス影響度に応じて「◯月◯日までにご回答いただけますと幸いです」など、回答期限を示します。AWS のサポート応答時間はプランによって異なります（例：General 24 時間以内）([AWS ドキュメント][7])。
+
+---
+
+## 問い合わせメール例
+
+```plaintext
+件名: 【Technical/General Guidance】TGW 共有承諾～アタッチ手順の公式ドキュメント準拠確認のお願い (Account B)
+
+AWS サポート御中
+
+お世話になっております。  
+XXX株式会社　クラウド基盤部のYYYと申します。  
+
+現在、アカウントB 側において、アカウントA から RAM 経由で共有された Transit Gateway (tgw-0123456789abcdef0) を下記手順で承諾・アタッチし、疎通確認を行いましたが、手順が最新の AWS 公式ドキュメントに沿っているか、また設定に抜け漏れや誤りがないかをご確認いただきたく存じます。
+
+――――――――――――  
+1. 共有リソースの承諾  
+   • RAM > Shared with me > Accept resource share (Pending → Active)  
+   • CLI: `aws ram accept-resource-share-invitation --resource-share-invitation-arn <ARN>`  
+
+2. VPC アタッチメントの作成  
+   • VPC > Transit Gateway Attachments > Create  
+   • DNS/IPv6/Appliance モード設定を有効化  
+   • CLI: `aws ec2 create-transit-gateway-vpc-attachment --transit-gateway-id tgw-... --vpc-id vpc-... --subnet-ids subnet-... --options ApplianceModeSupport=enable,DnsSupport=enable`  
+
+3. アタッチの承諾（アカウントA 側）  
+   • VPC > Transit Gateway Attachments (pendingAcceptance → available)  
+   • CLI: `aws ec2 accept-transit-gateway-vpc-attachment --transit-gateway-attachment-id tgw-attach-...`  
+
+4. 疎通確認  
+   • TGW/サブネットルートテーブルへの相手 VPC CIDR 追加  
+   • EC2 インスタンス間の ping 確認  
+   • Reachability Analyzer で “Reachable” 確認  
+
+※詳細なログやスクリーンショットは添付ファイルをご参照ください。  
+――――――――――――  
+
+【環境情報】  
+- アカウント ID：123456789012  
+- リージョン：ap-northeast-1  
+- AWS CLI バージョン：2.11.5  
+- Terraform バージョン：1.4.6  
+
+お手数をおかけしますが、上記手順に誤りや抜けがないかご確認のほど、よろしくお願いいたします。  
+回答はメール（YYY@company.co.jp）またはチャットでお送りいただけますと幸いです。
+
+以上、何卒よろしくお願いいたします。
+
+――――  
+YYY  
+XXX株式会社 クラウド基盤部  
+Tel: 03-1234-5678  
+Email: YYY@company.co.jp  
+```
+
+---
+
+[1]: https://docs.aws.amazon.com/awssupport/latest/user/case-example.html?utm_source=chatgpt.com "Example: Create a support case for account and billing - AWS Support"
+[2]: https://docs.aws.amazon.com/awssupport/latest/user/case-management.html?utm_source=chatgpt.com "Creating support cases and case management - AWS Documentation"
+[3]: https://repost.aws/knowledge-center/information-support-case?utm_source=chatgpt.com "File an AWS Support case with required information | AWS re:Post"
+[4]: https://repost.aws/articles/ARF5I10rw-R7uXnfC2MRvz4Q/following-best-practices-to-create-and-manage-your-aws-support-cases?utm_source=chatgpt.com "Following best practices to create and manage your AWS Support ..."
+[5]: https://docs.aws.amazon.com/awssupport/latest/APIReference/API_CreateCase.html?utm_source=chatgpt.com "CreateCase - AWS Support"
+[6]: https://docs.aws.amazon.com/awssupport/latest/user/monitoring-your-case.html?utm_source=chatgpt.com "Updating, resolving, and reopening your case - AWS Support"
+[7]: https://docs.aws.amazon.com/awssupport/latest/user/getting-started.html?utm_source=chatgpt.com "Getting started with AWS Support"
